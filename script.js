@@ -153,11 +153,103 @@ function startTimer() {
   }, 1000);
 }
 
-// ================= INIT =================
+// ================= WEBSITE COOKIE =================
 
-window.onload = function () {
-  loadGame();
-  renderIngredients();
+function setCookie(name, value, days) {
+  let expires = "";
+
+  if (days) {
+    const date = new Date();
+
+    date.setTime(
+      date.getTime() + (days * 24 * 60 * 60 * 1000)
+    );
+
+    expires = "; expires=" + date.toUTCString();
+  }
+
+  document.cookie =
+    name + "=" +
+    encodeURIComponent(value) +
+    expires +
+    "; path=/";
+}
+
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const cookies = document.cookie.split(";");
+
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i].trim();
+
+    if (cookie.indexOf(nameEQ) === 0) {
+      return decodeURIComponent(
+        cookie.substring(nameEQ.length)
+      );
+    }
+  }
+
+  return null;
+}
+
+
+// ================= START GAME =================
+
+function startGame() {
+
+  // Remember that the player has started the game
+  setCookie("cookingGameStarted", "true", 30);
+
+  // Hide welcome screen
+  const startOverlay = document.getElementById("startOverlay");
+
+  if (startOverlay) {
+    startOverlay.style.display = "none";
+  }
+
+  // Start the game
+  gameActive = true;
+
+  timeLeft = 60;
+  lives = 3;
+  score = 0;
+  ordersDone = 0;
+  pot = [];
+
   updateUI();
   startTimer();
+}
+
+
+// ================= CHECK COOKIE =================
+
+function checkStartCookie() {
+
+  const hasStarted = getCookie("cookingGameStarted");
+
+  const startOverlay =
+    document.getElementById("startOverlay");
+
+  if (hasStarted === "true") {
+
+    // User has already accepted/started
+    startOverlay.style.display = "none";
+
+  } else {
+
+    // First visit
+    startOverlay.style.display = "flex";
+  }
+}
+
+
+// ================= PAGE LOAD =================
+
+window.onload = function () {
+
+  checkStartCookie();
+
+  renderIngredients();
+  updateUI();
 };
