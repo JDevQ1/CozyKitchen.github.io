@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cozy Kitchen • Pixel Cooking Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>🍳 Cozy Kitchen</h1>
+    <p class="subtitle">A little pixel cooking game</p>
+  </header>
+
+  <div class="top-bar">
+    <div class="stat">⭐ Score: <span id="score">0</span></div>
+    <div class="stat">⏱️ Time: <span id="timer">60</span>s</div>
+    <div class="stat">❤️ Lives: <span id="lives">3</span></div>
+    <div class="stat">📦 Orders: <span id="ordersDone">0</span></div>
+  </div>
+
+  <div class="game-wrap">
+    <div class="left-panel">
+      <div class="order-card">
+        <h2>📋 Current Order</h2>
+        <div class="customer">
+          <div class="customer-face" id="customerFace">😊</div>
+          <div>
+            <div class="order-text" id="orderName">Waiting...</div>
+            <div style="font-size:12px;color:#8b5e3c;" id="customerName">—</div>
+          </div>
+        </div>
+        <div class="recipe-hint" id="recipeHint">
+          Start the game to get your first order!
+        </div>
+      </div>
+
+      <div class="pot-area">
+        <h2>🥘 Cooking Pot</h2>
+        <div class="pot-visual" id="potVisual">
+          <div class="steam"></div>
+          <div class="steam"></div>
+          <div class="steam"></div>
+          <div class="pot" id="potEmoji">🍲</div>
+        </div>
+        <div class="pot-contents" id="potContents"></div>
+        <div class="btn-row">
+          <button class="btn-cook" id="cookBtn" disabled>🔥 Cook!</button>
+          <button class="btn-clear" id="clearBtn" disabled>🗑️ Clear</button>
+        </div>
+      </div>
+
+      <div class="result-panel" id="resultPanel">
+        Ready when you are, chef!
+      </div>
+    </div>
+
+    <div class="ingredients-panel">
+      <h2>🥕 Ingredients</h2>
+      <div class="ingredient-grid" id="ingredientGrid"></div>
+    </div>
+  </div>
+
+  <footer>
+    Made with ❤️ • Cozy pixel vibes • Click ingredients then Cook
+  </footer>
+
+  <div class="overlay" id="startOverlay">
+    <div class="modal">
+      <h2>🍳 Welcome Chef!</h2>
+      <p>Run a tiny cozy kitchen. Customers will ask for simple dishes.</p>
+      <ul>
+        <li>Click ingredients to add them to the pot</li>
+        <li>Press <strong>Cook!</strong> when ready</li>
+        <li>Match the recipe to earn points</li>
+        <li>Wrong dish or time out = lose a life</li>
+      </ul>
+      <p style="font-size:13px;color:#8b5e3c;">You have 60 seconds and 3 lives. Good luck!</p>
+      <button class="btn-start" id="startBtn">Start Cooking ✨</button>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="gameOverOverlay">
+    <div class="modal">
+      <h2 id="gameOverTitle">Game Over</h2>
+      <p id="gameOverMsg">Nice try, chef!</p>
+      <p style="font-size:18px;margin:12px 0;">Final Score: <strong id="finalScore">0</strong></p>
+      <button class="btn-start" id="restartBtn">Play Again 🔄</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
