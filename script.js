@@ -41,31 +41,12 @@ let timerInterval = null;
 let isCooking = false;
 let highScore = 0;
 
-const scoreEl = document.getElementById('score');
-const timerEl = document.getElementById('timer');
-const livesEl = document.getElementById('lives');
-const ordersEl = document.getElementById('ordersDone');
-const highScoreEl = document.getElementById('highScore');
-const orderNameEl = document.getElementById('orderName');
-const customerNameEl = document.getElementById('customerName');
-const customerFaceEl = document.getElementById('customerFace');
-const recipeHintEl = document.getElementById('recipeHint');
-const potContentsEl = document.getElementById('potContents');
-const potVisualEl = document.getElementById('potVisual');
-const potEmojiEl = document.getElementById('potEmoji');
-const resultPanel = document.getElementById('resultPanel');
-const cookBtn = document.getElementById('cookBtn');
-const clearBtn = document.getElementById('clearBtn');
-const ingredientGrid = document.getElementById('ingredientGrid');
-const startOverlay = document.getElementById('startOverlay');
-const gameOverOverlay = document.getElementById('gameOverOverlay');
-const startBtn = document.getElementById('startBtn');
-const restartBtn = document.getElementById('restartBtn');
-const finalScoreEl = document.getElementById('finalScore');
-const gameOverTitle = document.getElementById('gameOverTitle');
-const gameOverMsg = document.getElementById('gameOverMsg');
-const startHighScoreEl = document.getElementById('startHighScore');
-const endHighScoreEl = document.getElementById('endHighScore');
+let scoreEl, timerEl, livesEl, ordersEl, highScoreEl;
+let orderNameEl, customerNameEl, customerFaceEl, recipeHintEl;
+let potContentsEl, potVisualEl, potEmojiEl, resultPanel;
+let cookBtn, clearBtn, ingredientGrid;
+let startOverlay, gameOverOverlay, startBtn, restartBtn;
+let finalScoreEl, gameOverTitle, gameOverMsg, startHighScoreEl, endHighScoreEl;
 
 function setCookie(name, value, days) {
 let expires = '';
@@ -111,12 +92,13 @@ if (endHighScoreEl) endHighScoreEl.textContent = highScore;
 }
 
 function buildIngredients() {
+if (!ingredientGrid) return;
 ingredientGrid.innerHTML = '';
-ingredients.forEach(ing => {
+ingredients.forEach(function(ing) {
 const btn = document.createElement('button');
 btn.className = 'ingredient-btn';
-btn.innerHTML = `<span class="emoji">${ing.emoji}</span><span>${ing.name}</span>`;
-btn.onclick = () => addToPot(ing.id);
+btn.innerHTML = '<span class="emoji">' + ing.emoji + '</span><span>' + ing.name + '</span>';
+btn.onclick = function() { addToPot(ing.id); };
 ingredientGrid.appendChild(btn);
 });
 }
@@ -129,13 +111,14 @@ return;
 }
 pot.push(id);
 updatePotDisplay();
-cookBtn.disabled = false;
-clearBtn.disabled = false;
+if (cookBtn) cookBtn.disabled = false;
+if (clearBtn) clearBtn.disabled = false;
 }
 
 function updatePotDisplay() {
-potContentsEl.innerHTML = pot.map(id => {
-const ing = ingredients.find(i => i.id === id);
+if (!potContentsEl) return;
+potContentsEl.innerHTML = pot.map(function(id) {
+const ing = ingredients.find(function(i) { return i.id === id; });
 return ing ? ing.emoji : '?';
 }).join(' ');
 }
@@ -143,10 +126,10 @@ return ing ? ing.emoji : '?';
 function clearPot() {
 pot = [];
 updatePotDisplay();
-cookBtn.disabled = true;
-clearBtn.disabled = true;
-potEmojiEl.textContent = '🍲';
-potVisualEl.classList.remove('cooking');
+if (cookBtn) cookBtn.disabled = true;
+if (clearBtn) clearBtn.disabled = true;
+if (potEmojiEl) potEmojiEl.textContent = '🍲';
+if (potVisualEl) potVisualEl.classList.remove('cooking');
 }
 
 function getRandomRecipe() {
@@ -155,68 +138,82 @@ return recipes[Math.floor(Math.random() * recipes.length)];
 
 function newOrder() {
 currentRecipe = getRandomRecipe();
-orderNameEl.textContent = currentRecipe.name + ' ' + currentRecipe.emoji;
-customerNameEl.textContent = currentRecipe.customer + ' is waiting';
-customerFaceEl.textContent = currentRecipe.face;
 
-const neededNames = currentRecipe.needs.map(id => {
-const ing = ingredients.find(i => i.id === id);
+if (orderNameEl) {
+orderNameEl.textContent = currentRecipe.name + ' ' + currentRecipe.emoji;
+}
+if (customerNameEl) {
+customerNameEl.textContent = currentRecipe.customer + ' is waiting';
+}
+if (customerFaceEl) {
+customerFaceEl.textContent = currentRecipe.face;
+}
+
+if (recipeHintEl) {
+const neededNames = currentRecipe.needs.map(function(id) {
+const ing = ingredients.find(function(i) { return i.id === id; });
 return ing ? ing.emoji + ' ' + ing.name : id;
 });
-recipeHintEl.innerHTML = `<strong>Needs:</strong> ${neededNames.join(' + ')}`;
+recipeHintEl.innerHTML = '<strong>Needs:</strong> ' + neededNames.join(' + ');
+}
+
 clearPot();
 showResult('New order! Add the right ingredients.', null);
 }
 
 function arraysMatch(a, b) {
 if (a.length !== b.length) return false;
-const sortedA = [...a].sort();
-const sortedB = [...b].sort();
-return sortedA.every((val, i) => val === sortedB[i]);
+const sortedA = a.slice().sort();
+const sortedB = b.slice().sort();
+for (let i = 0; i < sortedA.length; i++) {
+if (sortedA[i] !== sortedB[i]) return false;
+}
+return true;
 }
 
 function cook() {
 if (!gameActive || isCooking || pot.length === 0) return;
 isCooking = true;
-cookBtn.disabled = true;
-clearBtn.disabled = true;
-potVisualEl.classList.add('cooking');
-potEmojiEl.textContent = '🔥';
+if (cookBtn) cookBtn.disabled = true;
+if (clearBtn) clearBtn.disabled = true;
+if (potVisualEl) potVisualEl.classList.add('cooking');
+if (potEmojiEl) potEmojiEl.textContent = '🔥';
 
 showResult('Cooking... ⏳', null);
 
-setTimeout(() => {
+setTimeout(function() {
 const correct = arraysMatch(pot, currentRecipe.needs);
 
 if (correct) {
 score += currentRecipe.points;
 ordersDone++;
-scoreEl.textContent = score;
-ordersEl.textContent = ordersDone;
-showResult(`Perfect! +${currentRecipe.points} points 🎉`, true);
-potEmojiEl.textContent = currentRecipe.emoji;
+if (scoreEl) scoreEl.textContent = score;
+if (ordersEl) ordersEl.textContent = ordersDone;
+showResult('Perfect! +' + currentRecipe.points + ' points 🎉', true);
+if (potEmojiEl) potEmojiEl.textContent = currentRecipe.emoji;
 } else {
 lives--;
-livesEl.textContent = lives;
+if (livesEl) livesEl.textContent = lives;
 showResult('Wrong recipe! Lost a life 💔', false);
-potEmojiEl.textContent = '😵';
+if (potEmojiEl) potEmojiEl.textContent = '😵';
 }
 
 isCooking = false;
-potVisualEl.classList.remove('cooking');
+if (potVisualEl) potVisualEl.classList.remove('cooking');
 
 if (lives <= 0) {
 endGame(false);
 return;
 }
 
-setTimeout(() => {
+setTimeout(function() {
 if (gameActive) newOrder();
 }, 1200);
 }, 900);
 }
 
 function showResult(msg, success) {
+if (!resultPanel) return;
 resultPanel.textContent = msg;
 resultPanel.classList.remove('success', 'fail');
 if (success === true) resultPanel.classList.add('success');
@@ -224,9 +221,10 @@ if (success === false) resultPanel.classList.add('fail');
 }
 
 function startTimer() {
-timerInterval = setInterval(() => {
+if (timerInterval) clearInterval(timerInterval);
+timerInterval = setInterval(function() {
 timeLeft--;
-timerEl.textContent = timeLeft;
+if (timerEl) timerEl.textContent = timeLeft;
 if (timeLeft <= 0) {
 endGame(true);
 }
@@ -235,19 +233,19 @@ endGame(true);
 
 function endGame(timeUp) {
 gameActive = false;
-clearInterval(timerInterval);
-finalScoreEl.textContent = score;
+if (timerInterval) clearInterval(timerInterval);
+if (finalScoreEl) finalScoreEl.textContent = score;
 saveHighScore();
 
 if (timeUp) {
-gameOverTitle.textContent = "Time's Up!";
-gameOverMsg.textContent = `You completed ${ordersDone} orders. Great work, chef!`;
+if (gameOverTitle) gameOverTitle.textContent = "Time's Up!";
+if (gameOverMsg) gameOverMsg.textContent = 'You completed ' + ordersDone + ' orders. Great work, chef!';
 } else {
-gameOverTitle.textContent = 'Out of Lives';
-gameOverMsg.textContent = `You ran out of hearts after ${ordersDone} orders.`;
+if (gameOverTitle) gameOverTitle.textContent = 'Out of Lives';
+if (gameOverMsg) gameOverMsg.textContent = 'You ran out of hearts after ' + ordersDone + ' orders.';
 }
 
-gameOverOverlay.classList.remove('hidden');
+if (gameOverOverlay) gameOverOverlay.classList.remove('hidden');
 }
 
 function startGame() {
@@ -259,22 +257,56 @@ pot = [];
 isCooking = false;
 gameActive = true;
 
-scoreEl.textContent = score;
-livesEl.textContent = lives;
-timerEl.textContent = timeLeft;
-ordersEl.textContent = ordersDone;
+if (scoreEl) scoreEl.textContent = score;
+if (livesEl) livesEl.textContent = lives;
+if (timerEl) timerEl.textContent = timeLeft;
+if (ordersEl) ordersEl.textContent = ordersDone;
 
-startOverlay.classList.add('hidden');
-gameOverOverlay.classList.add('hidden');
+if (startOverlay) startOverlay.classList.add('hidden');
+if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
 
 newOrder();
 startTimer();
 }
 
-cookBtn.addEventListener('click', cook);
-clearBtn.addEventListener('click', clearPot);
-startBtn.addEventListener('click', startGame);
-restartBtn.addEventListener('click', startGame);
+function init() {
+scoreEl = document.getElementById('score');
+timerEl = document.getElementById('timer');
+livesEl = document.getElementById('lives');
+ordersEl = document.getElementById('ordersDone');
+highScoreEl = document.getElementById('highScore');
+orderNameEl = document.getElementById('orderName');
+customerNameEl = document.getElementById('customerName');
+customerFaceEl = document.getElementById('customerFace');
+recipeHintEl = document.getElementById('recipeHint');
+potContentsEl = document.getElementById('potContents');
+potVisualEl = document.getElementById('potVisual');
+potEmojiEl = document.getElementById('potEmoji');
+resultPanel = document.getElementById('resultPanel');
+cookBtn = document.getElementById('cookBtn');
+clearBtn = document.getElementById('clearBtn');
+ingredientGrid = document.getElementById('ingredientGrid');
+startOverlay = document.getElementById('startOverlay');
+gameOverOverlay = document.getElementById('gameOverOverlay');
+startBtn = document.getElementById('startBtn');
+restartBtn = document.getElementById('restartBtn');
+finalScoreEl = document.getElementById('finalScore');
+gameOverTitle = document.getElementById('gameOverTitle');
+gameOverMsg = document.getElementById('gameOverMsg');
+startHighScoreEl = document.getElementById('startHighScore');
+endHighScoreEl = document.getElementById('endHighScore');
+
+if (cookBtn) cookBtn.addEventListener('click', cook);
+if (clearBtn) clearBtn.addEventListener('click', clearPot);
+if (startBtn) startBtn.addEventListener('click', startGame);
+if (restartBtn) restartBtn.addEventListener('click', startGame);
 
 loadHighScore();
 buildIngredients();
+}
+
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', init);
+} else {
+init();
+}
